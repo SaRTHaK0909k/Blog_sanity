@@ -4,8 +4,15 @@ import Banner from "../components/Banner";
 import BannerBottom from "../components/BannerBottom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { sanityClient, urlFor } from "../sanity";
+import { Post } from "../typings";
+import Image from "next/image";
 
-export default function Home() {
+interface Props {
+  posts: Post[]; // Corrected the type declaration
+}
+
+export default function Home({ posts }: Props) {
   return (
     <div>
       <Head>
@@ -14,23 +21,42 @@ export default function Home() {
       </Head>
 
       <main className="font-bodyFont">
-        {/* ============ Header Start here ============ */}
         <Header />
-        {/* ============ Header End here ============== */}
-        {/* ============ Banner Start here ============ */}
         <Banner />
-        {/* ============ Banner End here ============== */}
         <div className="max-w-7xl mx-auto h-60 relative">
           <BannerBottom />
         </div>
-        {/* ============ Banner-Bottom End here ======= */}
-        {/* ============ Post Part Start here ========= */}
-        <div className="max-w-7xl mx-auto py-20 px-4">Posts will go here</div>
-        {/* ============ Post Part End here =========== */}
-        {/* ============ Footer Start here============= */}
+        <div className="max-w-7xl mx-auto py-20 px-4">
+          {posts.map((post) => (
+            <div key={post._id}>
+              <Image
+                width={300}
+                height={350}
+                src={urlFor(post.mainImage).url()!}
+                alt={post.title}
+              />
+            </div>
+          ))}
+        </div>
         <Footer />
-        {/* ============ Footer End here ============== */}
       </main>
     </div>
   );
 }
+
+export const getServerSideProps = async () => {
+  const query = `*[_type=="post"]{
+    _id,
+    title,
+    slug,
+    mainImage
+  }`;
+
+  const posts = await sanityClient.fetch(query);
+
+  return {
+    props: {
+      posts,
+    },
+  };
+};

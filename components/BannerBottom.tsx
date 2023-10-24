@@ -36,6 +36,7 @@ const BannerBottom = () => {
         </div>
       </div>
     </div>
+    
   );
 };
 
