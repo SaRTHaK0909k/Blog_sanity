@@ -1,16 +1,42 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { sanityClient, urlFor } from "../../sanity";
 import { Post } from "../../typings";
 import PortableText from "react-portable-text"
-
+import {useForm,SubmitHandler,FormState} from "react-hook-form"
 
 
 interface Props {
   post: Post;
 }
+
+type Inputs={
+  _id:string;
+  name:string;
+  email:string;
+  comment:string;
+}
+
+
 const Post = ({ post }: Props) => {
+
+  const { register, handleSubmit, formState: { errors } } = useForm<Inputs>();
+  const [submitted,setSubmitted]=useState(false);
+  const onSubmit : SubmitHandler<Inputs> = (data) =>{
+    fetch("/api/createComment",{
+      method:"POST",
+      body:JSON.stringify(data),
+    }).then(()=>{
+      setSubmitted(true)
+    })
+    .catch((err)=>{
+      setSubmitted(false)
+    });
+
+
+  };
+
   return (
     <div>
       <Header />
@@ -19,7 +45,7 @@ const Post = ({ post }: Props) => {
         src={urlFor(post.mainImage).url()!}
         alt="coverImage"
       />
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto mb-10">
         <article className="w-full mx-auto p-5 bg-secondaryColor/10">
           <h1 className="font-titleFont font-medium text-[32px] text-primary border-b-[1px] border-b-cyan-800 mt-10 mb-3">
             {post.title}
@@ -68,6 +94,47 @@ const Post = ({ post }: Props) => {
             />
           </div>
         </article>
+        <hr className="max-w-lg my-5 mx-auto border[1px] border-secondaryColor"/>
+        <div>
+          <p className="text-xs text-secondaryColor uppercase font-titleFont font-bold">Enjoyed this Article?</p>
+          <h3 className="font-titleFont text-3xl font-bold">Leave a Comment below!</h3>
+              <hr className="py-3 mt-2"/>
+
+                  <input {...register("_id")}
+                  type="hidden"
+                  name="_id"
+                  value={post._id} />
+
+              <form onSubmit={handleSubmit(onSubmit)} className="mt-7 flex flex-col">
+                <label className="flex flex-col">
+                  <span className="font-titleFont font-semibold text-base">Name</span>
+                  <input
+                  {...register("name",{required:true})}
+                  type="text" placeholder="Enter your name"
+                  className="text-base placeholder:text-sm border-b-[1px] border-secondaryColor py-1 px-4 outline-none focus-within:shadow-xl shadow-secondaryColor"/>
+                </label>
+
+
+                <label className="flex flex-col">
+                  <span className="font-titleFont font-semibold text-base">Email</span>
+                  <input 
+                  {...register("email",{required:true})}
+                  type="email" placeholder="Enter your Email"
+                  className="text-base placeholder:text-sm border-b-[1px] border-secondaryColor py-1 px-4 outline-none focus-within:shadow-xl shadow-secondaryColor"/>
+                </label>
+
+                <label className="flex flex-col">
+                  <span className="font-titleFont font-semibold text-base">Comment</span>
+                  <textarea 
+                   {...register("comment",{required:true})}
+                  className="text-base placeholder:text-sm border-b-[1px] border-secondaryColor py-2 px-4 outline-none focus-within:shadow-xl shadow-secondaryColor"
+                  placeholder="Enter your Comments"
+                  rows={6}  
+                  />
+                </label>
+                  <button type="submit" className="w-full bg-bgColor text-white text-base font-titleFont font-semibold tracking-wider uppercase py-2 rounded-sm hover:bg-secondaryColor duration-300">Submit</button>
+              </form>
+        </div>
       </div>
       <Footer />
     </div>
@@ -126,70 +193,3 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   };
 };
 
-// import React from 'react'
-// import Header from '../../components/Header';
-// import Footer from '../../components/Footer';
-// import { sanityClient } from '../../sanity';
-// import { Post } from '../../typings';
-
-// const Post = () => {
-//   return (
-//     <div>
-//     <Header/>
-//     <div className="py-20">
-//         {}
-//     </div>
-//     <Footer/>
-//     </div>
-//   )
-// }
-
-// export default Post
-
-// export const getStaticPaths = async()=>{
-//     const query = `*[_type == "post"]{
-//         _id,
-//         slug{
-//             current
-//         }
-//     }`;
-//     const posts = await sanityClient.fetch(query);
-//     const paths = posts.map((post:Post)=>({
-//             slug:post.slug.current,
-//     }));
-//     return{
-//         paths,
-//         fallback:"blocking",
-//     };
-// }
-
-// export getStaticProps: getStaticProps = async({params}=>{
-//     const query = `*[type == "post" && slug.current == $slug][0]{
-//         _id,
-//         publishedAt,
-//         title,
-//         author -> {
-//             name,
-//             image,
-//         },
-//         description,
-//         mainImage,
-//         slug,
-//         body
-//     }`
-
-//     const post = await sanityClient.fetch(query,{
-//         slug:params?.slug,
-//     })
-//     if(!post){
-//         return {
-//             notFound:true
-//         }
-//     }
-//     return {
-//         props:{
-//             post
-//         },
-//         revalidate:60,
-//     }
-// })
