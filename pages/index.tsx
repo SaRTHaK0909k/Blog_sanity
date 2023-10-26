@@ -43,16 +43,15 @@ export default function Home({ posts }: Props) {
                   </div>
                   <div className="h-2/5 w-full flex flex-col justify-center ">
                   <div className="flex justify-between items-center px-4 py-1 border-b-[1px] border-b-gray-500">
-                      <p>
-                        {post.title}
-                        {post.author && post.author.image && (
+                      <p className="font-titlefont text-xl uppercase font-bold">{post.title}</p>
+      
                           <img
                             className="w-12 h-12 rounded-full object-cover"
                             src={urlFor(post.author.image).url()!}
                             alt="Author Image"
                           />
-                        )}
-                      </p>
+                      
+                      
                     </div>
                     <p className="py-2 px-4 text-base">{post.description.substring(0,60)} ... by - <span className="font-semibold">{post.author.name}</span></p>
                   </div>

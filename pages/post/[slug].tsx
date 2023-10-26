@@ -3,38 +3,41 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { sanityClient, urlFor } from "../../sanity";
 import { Post } from "../../typings";
-import PortableText from "react-portable-text"
-import {useForm,SubmitHandler,FormState} from "react-hook-form"
+import PortableText from "react-portable-text";
+import { useForm, SubmitHandler, FormState } from "react-hook-form";
+import { useSession } from "next-auth/react";
 
 
 interface Props {
   post: Post;
 }
 
-type Inputs={
-  _id:string;
-  name:string;
-  email:string;
-  comment:string;
-}
-
+type Inputs = {
+  _id: string;
+  name: string;
+  email: string;
+  comment: string;
+};
 
 const Post = ({ post }: Props) => {
-
-  const { register, handleSubmit, formState: { errors } } = useForm<Inputs>();
-  const [submitted,setSubmitted]=useState(false);
-  const onSubmit : SubmitHandler<Inputs> = (data) =>{
-    fetch("/api/createComment",{
-      method:"POST",
-      body:JSON.stringify(data),
-    }).then(()=>{
-      setSubmitted(true)
+  const {data:session} = useSession();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
+  const [submitted, setSubmitted] = useState(false);
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    fetch("/api/createComment", {
+      method: "POST",
+      body: JSON.stringify(data),
     })
-    .catch((err)=>{
-      setSubmitted(false)
-    });
-
-
+      .then(() => {
+        setSubmitted(true);
+      })
+      .catch((err) => {
+        setSubmitted(false);
+      });
   };
 
   return (
@@ -60,95 +63,130 @@ const Post = ({ post }: Props) => {
               alt="authorImg"
             />
             <p className="font-bodyFont text-base">
-              Blog post by <span className="font-bold text-secondaryColor">{post.author.name}</span> - Published at{" "}
-              {new Date(post.publishedAt).toLocaleDateString()}{" "}
+              Blog post by{" "}
+              <span className="font-bold text-secondaryColor">
+                {post.author.name}
+              </span>{" "}
+              - Published at {new Date(post.publishedAt).toLocaleDateString()}{" "}
             </p>
           </div>
           <div className="mt-10">
-            <PortableText dataset={"production"}
-                projectId={"rofbwy93"}
-                content={post.body}
-                serializers={{
-                  h1:(props:any)=>(
-                      <h1 className="text-3xl font-bold my-5 font-titleFont"
-                      {...props}/>
-                  ),
-                  h2:(props:any)=>(
-                    <h2 className="text-2xl font-bold my-5 font-titleFont"
-                    {...props}/>
-                  ),
-                  h3:(props:any)=>(
-                    <h3 className="text-2xl font-bold my-5 font-titleFont"
-                    {...props}/>
-                  ),
-                  li:({children}:any)=>(
-                    <li className="ml-4 list-disc">{children}</li>
-                  ),
-                  link:({href,children}:any)=>(
-                    <a href={href} className="text-cyan-500 hover:underline">
-                      {children}
-                    </a>
-                  ),
-
-                }}
+            <PortableText
+              dataset={"production"}
+              projectId={"rofbwy93"}
+              content={post.body}
+              serializers={{
+                h1: (props: any) => (
+                  <h1
+                    className="text-3xl font-bold my-5 font-titleFont"
+                    {...props}
+                  />
+                ),
+                h2: (props: any) => (
+                  <h2
+                    className="text-2xl font-bold my-5 font-titleFont"
+                    {...props}
+                  />
+                ),
+                h3: (props: any) => (
+                  <h3
+                    className="text-2xl font-bold my-5 font-titleFont"
+                    {...props}
+                  />
+                ),
+                li: ({ children }: any) => (
+                  <li className="ml-4 list-disc">{children}</li>
+                ),
+                link: ({ href, children }: any) => (
+                  <a href={href} className="text-cyan-500 hover:underline">
+                    {children}
+                  </a>
+                ),
+              }}
             />
           </div>
         </article>
-        <hr className="max-w-lg my-5 mx-auto border[1px] border-secondaryColor"/>
+        <hr className="max-w-lg my-5 mx-auto border[1px] border-secondaryColor" />
         <div>
-          <p className="text-xs text-secondaryColor uppercase font-titleFont font-bold">Enjoyed this Article?</p>
-          <h3 className="font-titleFont text-3xl font-bold">Leave a Comment below!</h3>
-              <hr className="py-3 mt-2"/>
+          <p className="text-xs text-secondaryColor uppercase font-titleFont font-bold">
+            Enjoyed this Article?
+          </p>
+          <h3 className="font-titleFont text-3xl font-bold">
+            Leave a Comment below!
+          </h3>
+          <hr className="py-3 mt-2" />
 
-                  <input {...register("_id")}
-                  type="hidden"
-                  name="_id"
-                  value={post._id} />
+          <input
+            {...register("_id")}
+            type="hidden"
+            name="_id"
+            value={post._id}
+          />
 
-              <form onSubmit={handleSubmit(onSubmit)} className="mt-7 flex flex-col">
-                <label className="flex flex-col">
-                  <span className="font-titleFont font-semibold text-base">Name</span>
-                  <input
-                  {...register("name",{required:true})}
-                  type="text" placeholder="Enter your name"
-                  className="text-base placeholder:text-sm border-b-[1px] border-secondaryColor py-1 px-4 outline-none focus-within:shadow-xl shadow-secondaryColor"/>
-                </label>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="mt-7 flex flex-col"
+          >
+            <label className="flex flex-col">
+              <span className="font-titleFont font-semibold text-base">
+                Name
+              </span>
+              <input
+                {...register("name", { required: true })}
+                type="text"
+                placeholder="Enter your name"
+                className="text-base placeholder:text-sm border-b-[1px] border-secondaryColor py-1 px-4 outline-none focus-within:shadow-xl shadow-secondaryColor"
+              />
+            </label>
 
+            <label className="flex flex-col">
+              <span className="font-titleFont font-semibold text-base">
+                Email
+              </span>
+              <input
+                {...register("email", { required: true })}
+                type="email"
+                placeholder="Enter your Email"
+                className="text-base placeholder:text-sm border-b-[1px] border-secondaryColor py-1 px-4 outline-none focus-within:shadow-xl shadow-secondaryColor"
+              />
+            </label>
 
-                <label className="flex flex-col">
-                  <span className="font-titleFont font-semibold text-base">Email</span>
-                  <input 
-                  {...register("email",{required:true})}
-                  type="email" placeholder="Enter your Email"
-                  className="text-base placeholder:text-sm border-b-[1px] border-secondaryColor py-1 px-4 outline-none focus-within:shadow-xl shadow-secondaryColor"/>
-                </label>
+            <label className="flex flex-col">
+              <span className="font-titleFont font-semibold text-base">
+                Comment
+              </span>
+              <textarea
+                {...register("comment", { required: true })}
+                className="text-base placeholder:text-sm border-b-[1px] border-secondaryColor py-2 px-4 outline-none focus-within:shadow-xl shadow-secondaryColor"
+                placeholder="Enter your Comments"
+                rows={6}
+              />
+            </label>
+           {session && (
+             <button
+             type="submit"
+             className="w-full bg-bgColor text-white text-base font-titleFont font-semibold tracking-wider uppercase py-2 rounded-sm hover:bg-secondaryColor duration-300"
+           >
+             Submit
+           </button>
+           )}
+           
+          </form>
 
-                <label className="flex flex-col">
-                  <span className="font-titleFont font-semibold text-base">Comment</span>
-                  <textarea 
-                   {...register("comment",{required:true})}
-                  className="text-base placeholder:text-sm border-b-[1px] border-secondaryColor py-2 px-4 outline-none focus-within:shadow-xl shadow-secondaryColor"
-                  placeholder="Enter your Comments"
-                  rows={6}  
-                  />
-                </label>
-                  <button type="submit" className="w-full bg-bgColor text-white text-base font-titleFont font-semibold tracking-wider uppercase py-2 rounded-sm hover:bg-secondaryColor duration-300">Submit</button>
-              </form>
-
-                {/* comments */}
-                <div className="w-full flex flex-col p-10 my-10 mx-auto shadow-bgColor shadow-lg space-y-2">
-                  <h3 className="text-3xl font-titleFont font-semibold">Comments</h3>
-                  <hr />
-                  {post.comments.map((comment)=>(
-                    <div key={comment._id}>
-                      <p><span className="text-secondaryColor">{comment.name}</span>
-                      {""}
-                      {comment.comment}</p>
-                    </div>
-                  ))}
-                </div>
-
-
+          {/* comments */}
+          <div className="w-full flex flex-col p-10 my-10 mx-auto shadow-bgColor shadow-lg space-y-2">
+            <h3 className="text-3xl font-titleFont font-semibold">Comments</h3>
+            <hr />
+            {post.comments.map((comment) => (
+              <div key={comment._id}>
+                <p>
+                  <span className="text-secondaryColor">{comment.name}</span>
+                  {": "}
+                  {comment.comment}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       <Footer />
@@ -208,4 +246,3 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     revalidate: 60,
   };
 };
-

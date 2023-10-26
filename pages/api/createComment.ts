@@ -23,7 +23,7 @@ export default async function createComment(
         _ref: _id,
       },
       name,
-      email,
+      email,  
       comment
     });
   } catch (err) {

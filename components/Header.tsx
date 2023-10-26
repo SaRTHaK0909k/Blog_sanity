@@ -28,15 +28,19 @@ console.log(session);
           <div className="flex items-center gap-1">
             <img
               className="w-8 h-8 rounded-full"
-              src="https://www.noormohammad.live/static/media/roundedProfile.477a194221d255c8ce26.png"
+              src={session?session?.user!.image!:"https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=800"}
               alt="logo"
             />
-            <p className="text-sm font-medium">Hello Stranger!</p>
+            <p className="text-sm font-medium">{session ? session?.user!.name: "Hello Stranger"}</p>
           </div>
 
-          <button onClick={()=>signIn()} className="uppercase text-sm border-[1px] border-primaryColor hover:border-secondaryColor px-4 py-1 font-semibold hover:text-white rounded-md hover:bg-secondaryColor transition-all duration-300 active:bg-yellow-600">
+      {session ? <button onClick={()=>signOut()} className="uppercase text-sm border-[1px] border-primaryColor hover:border-secondaryColor px-4 py-1 font-semibold hover:text-white rounded-md hover:bg-secondaryColor transition-all duration-300 active:bg-yellow-600">
+            Sign Out
+          </button> : <button onClick={()=>signIn()} className="uppercase text-sm border-[1px] border-primaryColor hover:border-secondaryColor px-4 py-1 font-semibold hover:text-white rounded-md hover:bg-secondaryColor transition-all duration-300 active:bg-yellow-600">
             Sign In
-          </button>
+          </button> }
+
+         
         </div>
       </div>
     </div>
