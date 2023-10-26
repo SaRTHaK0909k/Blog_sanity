@@ -1,8 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import logoDark from "../public/images/logoDark.png";
+import { useSession, signIn, signOut, SessionProvider } from "next-auth/react"
 
 const Header = () => {
+const {data:session} = useSession();
+console.log(session);
+
   return (
     <div className="w-full h-20 border-b-[1px] border-b-black font-titleFont sticky top-0 bg-white z-50 px-4">
       <div className="max-w-7xl h-full mx-auto flex justify-between items-center">
@@ -30,7 +34,7 @@ const Header = () => {
             <p className="text-sm font-medium">Hello Stranger!</p>
           </div>
 
-          <button className="uppercase text-sm border-[1px] border-primaryColor hover:border-secondaryColor px-4 py-1 font-semibold hover:text-white rounded-md hover:bg-secondaryColor transition-all duration-300 active:bg-yellow-600">
+          <button onClick={()=>signIn()} className="uppercase text-sm border-[1px] border-primaryColor hover:border-secondaryColor px-4 py-1 font-semibold hover:text-white rounded-md hover:bg-secondaryColor transition-all duration-300 active:bg-yellow-600">
             Sign In
           </button>
         </div>

@@ -134,6 +134,21 @@ const Post = ({ post }: Props) => {
                 </label>
                   <button type="submit" className="w-full bg-bgColor text-white text-base font-titleFont font-semibold tracking-wider uppercase py-2 rounded-sm hover:bg-secondaryColor duration-300">Submit</button>
               </form>
+
+                {/* comments */}
+                <div className="w-full flex flex-col p-10 my-10 mx-auto shadow-bgColor shadow-lg space-y-2">
+                  <h3 className="text-3xl font-titleFont font-semibold">Comments</h3>
+                  <hr />
+                  {post.comments.map((comment)=>(
+                    <div key={comment._id}>
+                      <p><span className="text-secondaryColor">{comment.name}</span>
+                      {""}
+                      {comment.comment}</p>
+                    </div>
+                  ))}
+                </div>
+
+
         </div>
       </div>
       <Footer />
@@ -171,6 +186,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       name,
       image,
      },
+     "comments":*[_type=="comment" && post._ref== ^._id && approved == true],
      description,
      mainImage,
      slug,
